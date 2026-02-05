@@ -5,70 +5,53 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ========================
-// FAKE DATABASE (RAM)
-// ========================
 let clients = [];
 let idCounter = 1;
 
-// ========================
-// TEST
-// ========================
+// Test
 app.get("/", (req, res) => {
   res.send("Backend OK 🚀");
 });
 
-// ========================
-// GET CLIENTS
-// ========================
+// GET clients
 app.get("/clients", (req, res) => {
   res.json(clients);
 });
 
-// ========================
-// ADD CLIENT
-// ========================
+// POST client
 app.post("/clients", (req, res) => {
-  const { name, email, phone } = req.body;
-
-  const newClient = {
+  const client = {
     id: idCounter++,
-    name,
-    email,
-    phone
+    name: req.body.name,
+    email: req.body.email,
+    phone: req.body.phone
   };
 
-  clients.push(newClient);
+  clients.push(client);
   res.send("Client ajouté");
 });
 
-// ========================
-// UPDATE CLIENT
-// ========================
+// PUT client
 app.put("/clients/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, email, phone } = req.body;
 
   const client = clients.find(c => c.id === id);
   if (!client) return res.status(404).send("Client introuvable");
 
-  client.name = name;
-  client.email = email;
-  client.phone = phone;
+  client.name = req.body.name;
+  client.email = req.body.email;
+  client.phone = req.body.phone;
 
   res.send("Client modifié");
 });
 
-// ========================
-// DELETE CLIENT
-// ========================
+// DELETE client
 app.delete("/clients/:id", (req, res) => {
   const id = parseInt(req.params.id);
   clients = clients.filter(c => c.id !== id);
   res.send("Client supprimé");
 });
 
-// ========================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
